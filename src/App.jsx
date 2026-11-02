@@ -11,6 +11,21 @@ import {
 } from './data.js';
 import { CountUp, Reveal } from './components/InteractionPrimitives.jsx';
 
+// GitHub Pages hosts this project inside /Agri-view/, not at the domain root.
+const BASE_PATH = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+function withBasePath(path) {
+  if (!path?.startsWith('/')) return path;
+  return `${BASE_PATH}${path}`;
+}
+
+function getRoutePath(pathname = window.location.pathname) {
+  const route = pathname.startsWith(BASE_PATH)
+    ? pathname.slice(BASE_PATH.length)
+    : pathname;
+  return route || '/';
+}
+
 const categories = [
   { label: 'Staples' },
   { label: 'Roots & tubers' },
@@ -50,7 +65,7 @@ function SectionTitle({ eyebrow, title, text, action }) {
 
 function Photo({ src, alt, className = '', loading = 'lazy' }) {
   if (!src) return <div className={`crop-art ${className}`} aria-hidden="true"><span /><span /><span /><i /></div>;
-  return <img className={className} src={src} alt={alt || ''} loading={loading} fetchPriority={loading === 'eager' ? 'high' : 'auto'} decoding="async" />;
+  return <img className={className} src={withBasePath(src)} alt={alt || ''} loading={loading} fetchPriority={loading === 'eager' ? 'high' : 'auto'} decoding="async" />;
 }
 
 function AccordionGallery({ items, openIndex, onToggle, className = '' }) {
@@ -127,7 +142,7 @@ function DataStamp({ source, text = 'Source' }) {
 }
 
 function App() {
-  const [path, setPath] = useState(() => window.location.pathname || '/');
+  const [path, setPath] = useState(() => getRoutePath());
   const [theme, setTheme] = useState(() => {
     try { return localStorage.getItem('agri-view-theme') === 'dark' ? 'dark' : 'light'; }
     catch { return 'light'; }
@@ -146,7 +161,7 @@ function App() {
   }, [theme]);
 
   useEffect(() => {
-    const update = () => setPath(window.location.pathname || '/');
+    const update = () => setPath(getRoutePath());
     window.addEventListener('popstate', update);
     return () => window.removeEventListener('popstate', update);
   }, []);
@@ -180,7 +195,7 @@ function App() {
 
   const navigate = (to) => {
     if (!to) return;
-    window.history.pushState({}, '', to);
+    window.history.pushState({}, '', withBasePath(to));
     setPath(to);
     setCropMenuOpen(false);
     setMobileMenuOpen(false);
@@ -189,7 +204,7 @@ function App() {
 
   const Link = ({ to, children, className, onClick, ...props }) => (
     <a
-      href={to}
+      href={withBasePath(to)}
       className={className}
       onClick={(event) => {
         onClick?.(event);
@@ -222,7 +237,7 @@ function App() {
         <div className="nav-wrap">
            <Link to="/" className="brand" aria-label="Agri View home">
             <img
-            src="/images/agri-view-logo.png"
+            src={withBasePath("/images/agri-view-logo.png")}
             alt="Agri View Rwanda"
             className="brand-logo"
             />
