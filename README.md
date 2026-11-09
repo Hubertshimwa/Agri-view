@@ -2,6 +2,9 @@
 
 Agri View Rwanda presents agricultural statistics, crop profiles, practical field notes and sector updates for people working in and with Rwanda's agriculture sector.
 
+# View Agri-view rwanda online
+this is hosted directly on github pages and it is is available at https://hubertshimwa.github.io/Agri-view/
+
 ## Run locally
 
 Requirements: Node.js 20.19 or later.
